@@ -55,7 +55,6 @@ thisExp = data.ExperimentHandler(name=expName, version='',
 logFile = logging.LogFile(filename+'.log', level=logging.EXP)
 logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a file
 
-
 # ---------------------------------------------
 # Connect to iViewX
 # ---------------------------------------------
@@ -217,6 +216,8 @@ buttonLineWidth = 1
 psizeliste = [0]*900 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
 psize = 0
 
+
+
 #################################################
 # Start Routine: baselineInstruction
 #################################################
@@ -225,6 +226,7 @@ key_resp_3 = event.BuilderKeyResponse()
 
 # keep track of which components have finished
 baselineInstructionComponents = [stim_baseline_instruction, key_resp_3]
+
 for thisComponent in baselineInstructionComponents:
     if hasattr(thisComponent, 'status'): thisComponent.status = NOT_STARTED
 
@@ -284,10 +286,13 @@ while continueRoutine:
 for thisComponent in baselineInstructionComponents:
     if hasattr(thisComponent, "setAutoDraw"): thisComponent.setAutoDraw(False)
 routineTimer.reset()
+
 #################################################
 # Start Routine: baseline
 #################################################
 routineTimer.add(5.000000)
+
+# algorithm code (just use as is)
 
 bsize_liste = [0]*900 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
 bsize = 0
@@ -518,10 +523,15 @@ beInsideWrong=False
 
 # Create the object
 vert1 = ((-3*scaling, -3*scaling), (-3*scaling, 2*scaling), (-2*scaling, 3*scaling), (3*scaling, 3*scaling), (3*scaling, -3*scaling))
+
+# Define keys
 form1 = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 0))
-formListe = [form1]
+form2 = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, 100))
+
+formListe = [form1,form2]
 
 posPix1 = posToPix(formListe[0])
+posPix2 = posToPix(formListe[1])
 
 # Draw crosses on the object
 objCross1 = visual.Line(win, start=(0, -crossLength), end=(0, crossLength), pos=(posPix1,posPix1), lineColor=crossColor)
@@ -533,6 +543,7 @@ objCrossSelected1 = visual.Line(win, start=(0, -crossLength), end=(0, crossLengt
 objCrossSelected2 = visual.Line(win, start=(-crossLength, 0), end=(crossLength, 0), pos=(0,0), lineColor=crossColorHover)
 
 # imgCorrect = visual.ImageStim(win, image='images/checkmarkRight.png', mask=None, pos=(posPix1[0], posPix1[1]), size=96, units=u'pix', ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
+
 # imgFalse = visual.ImageStim(win, image='images/checkmarkWrong.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
 # imgTimeout = visual.ImageStim(win, image='images/checkmarkTimeout.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
 
@@ -709,6 +720,7 @@ while continueRoutine:
     form1.draw()
     objCross1.draw()
     objCross2.draw()
+    form2.draw()
     
     # Check which of the objects is being viewed
     objBoundary_X_1 = posPix1[0] - objArea
@@ -716,6 +728,10 @@ while continueRoutine:
     
     objBoundary_Y_1 = posPix1[1] - objArea
     objBoundary_Y_2 = posPix1[1] + objArea
+    
+    
+    # which object are we looking at
+    # do loop of object boundary check
     
     # Are we gazing at the object?
     if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:

@@ -525,10 +525,36 @@ beInsideWrong=False
 vert1 = ((-3*scaling, -3*scaling), (-3*scaling, 2*scaling), (-2*scaling, 3*scaling), (3*scaling, 3*scaling), (3*scaling, -3*scaling))
 
 # Define keys
-form1 = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 0))
-form2 = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, 100))
+formQ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 0))
+formW = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 1))
+formE = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 2))
+formR = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 3))
+formT = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 4))
+formY = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 5))
+formU = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 6))
+formI = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 7))
+formO = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 8))
+formP = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(0, 8))
 
-formListe = [form1,form2]
+formA = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 0))
+formS = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 1))
+formD = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 2))
+formF = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 3))
+formG = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 4))
+formH = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 5))
+formJ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 6))
+formK = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 7))
+formL = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-1, 8))
+
+formZ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 0))
+formX = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 1))
+formC = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 2))
+formV = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 3))
+formB = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 4))
+formN = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 5))
+formM = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-2, 6))
+
+formListe = [formQ, formW, formE, formR, formT, , formY, formU, formI, formO, formP, formA, formS, formD, formF, , formG, formH, formJ, formK, formL, formZ, formX, formC, formV, formB, formN, formM]
 
 posPix1 = posToPix(formListe[0])
 posPix2 = posToPix(formListe[1])
@@ -717,11 +743,12 @@ while continueRoutine:
     
     #############################################
     ### Draw the objects and crosses on them
-    form1.draw()
-    objCross1.draw()
+    for key in formListe:
+		key.draw()
+	
+	objCross1.draw()
     objCross2.draw()
-    form2.draw()
-    
+	
     # Check which of the objects is being viewed
     objBoundary_X_1 = posPix1[0] - objArea
     objBoundary_X_2 = posPix1[0] + objArea

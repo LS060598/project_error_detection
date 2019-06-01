@@ -72,7 +72,7 @@ print "iViewX API Version: " + str(systemData.API_MajorVersion) + "." + str(syst
 # Calibrate iViewX
 # ---------------------------------------------
 
-calibrate = 1
+calibrate = 0
 
 if calibrate:
     calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
@@ -122,7 +122,7 @@ stim_writing_output = visual.TextStim(win=win, name='stim_writing_output',
 stim_writing_input = visual.TextStim(win=win, name='stim_writing_input',
     text='',
     font='Arial',
-    units='pix', pos=[0, 150], height=30, wrapWidth=None, ori=0, 
+    units='pix', pos=[0, -400], height=30, wrapWidth=None, ori=0, 
     color='#cccccc', colorSpace='rgb', opacity=1,
     depth=-1.0);
 
@@ -186,7 +186,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 pupil_circle_goal_size = 50
 
 # Time until an object is selected (in fps)
-gaze_required_time = 30 # 1/2 second
+gaze_required_time = 25 # 1/nth second
 
 # the interval after performing a writing operation, during which an undo operation can be performed
 undo_interval = 60
@@ -512,7 +512,7 @@ next_writing_frame = [0] * 27
 # quitTimer = 0
 
 #Size of selectable area around Object 3* = original
-objArea = 2 * scaling
+objArea = 2.5 * scaling
 
 # pupilSizeList=[]
 # pupilSizeRound=0
@@ -606,6 +606,7 @@ letterV = visual.TextStim(win, text = 'V',  pos=(posToPix(formV)), color=crossCo
 letterB = visual.TextStim(win, text = 'B',  pos=(posToPix(formB)), color=crossColor)
 letterN = visual.TextStim(win, text = 'N',  pos=(posToPix(formN)), color=crossColor)
 letterM = visual.TextStim(win, text = 'M',  pos=(posToPix(formM)), color=crossColor)
+
 letterSpace = visual.TextStim(win, text = '  SPACE',  pos=(posToPix(formSpace)), color=crossColor)
 
 letterList=[letterQ,letterW,letterE,letterR,letterT,letterY,letterU,letterI,letterO,letterP,letterA,letterS,letterD,letterF,letterG,letterH,letterJ,letterK,letterL,letterZ,letterX,letterC,letterV,letterB,letterN,letterM,letterSpace]
@@ -790,7 +791,7 @@ while continueRoutine:
     for letter in letterList:
         letter.draw()
 
-    stim_writing_input.text  = "Blabkjsdhf"
+    stim_writing_input.text  = "HELLO WORLD"
     stim_writing_input.draw()
 
     # Do magic here
@@ -802,13 +803,20 @@ while continueRoutine:
         #    posPix1 = posToPix(formListst[0])
         posPix1 = posToPix(key)
         # Check which of the objects is being viewed
-        objBoundary_X_1 = posPix1[0] - objArea
-        objBoundary_X_2 = posPix1[0] + objArea
         
-        objBoundary_Y_1 = posPix1[1] - objArea
-        objBoundary_Y_2 = posPix1[1] + objArea
+        if key.name == ' ':
+            objBoundary_X_1 = posPix1[0] - objArea
+            objBoundary_X_2 = posPix1[0] + (objArea*2)
         
+            objBoundary_Y_1 = posPix1[1] - objArea
+            objBoundary_Y_2 = posPix1[1] + objArea
+        else:
+            objBoundary_X_1 = posPix1[0] - objArea
+            objBoundary_X_2 = posPix1[0] + objArea
         
+            objBoundary_Y_1 = posPix1[1] - objArea
+            objBoundary_Y_2 = posPix1[1] + objArea
+
         # which object are we looking at
         # do loop of object boundary check
         #circleEye = visual.RadialStim(win, tex='none', mask='none', pos=(gazeRx, gazeRy), size=(25, 25), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)

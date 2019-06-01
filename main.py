@@ -188,6 +188,8 @@ pupil_circle_goal_size = 50
 # Time until an object is selected (in fps)
 gaze_required_time = 25 # 1/nth second
 
+cursorTimer = 0
+
 # the interval after performing a writing operation, during which an undo operation can be performed
 undo_interval = 60
 
@@ -508,6 +510,7 @@ m = 0
 beginGazeTimer = False
 gazeTimer = [0] * 27
 next_writing_frame = [0] * 27
+undo_success = [False] * 27
 
 # quitTimer = 0
 
@@ -615,7 +618,6 @@ letterList=[letterQ,letterW,letterE,letterR,letterT,letterY,letterU,letterI,lett
 
 # imgFalse = visual.ImageStim(win, image='images/checkmarkWrong.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
 # imgTimeout = visual.ImageStim(win, image='images/checkmarkTimeout.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
-
 
 ################################
 
@@ -784,6 +786,7 @@ while continueRoutine:
     state_no = state_next
     
     #############################################
+    
     ### Draw the objects and crosses on them
     for key in formList:
         key.draw()
@@ -797,7 +800,15 @@ while continueRoutine:
     # Do magic here
     #posPix1 = posToPix(formList[0])
     #posPix2 = posToPix(formList[1])
-
+    
+    cursorTimer += 1
+    
+    if cursorTimer >= 60:
+        stim_writing_output.text = stim_writing_output.text.replace('_', '')
+        cursorTimer = 0
+    elif cursorTimer == 30:
+        stim_writing_output.text = stim_writing_output.text + '_'
+    
     i = 0
     for key in formList:
         #    posPix1 = posToPix(formListst[0])
@@ -861,10 +872,11 @@ while continueRoutine:
                         next_writing_frame[i] += write_same_letter_interval + undo_interval
                     
                     # Write
+                    stim_writing_output.text = stim_writing_output.text.replace('_', '')
                     stim_writing_output.text = stim_writing_output.text + key.name
                     
                     # allow undo
-                    undo_success = False
+                    undo_success[i] = False
                 
                 # do undo
                 if frameN < next_writing_frame[i]:
@@ -897,13 +909,12 @@ while continueRoutine:
                     circle1.draw()
                     
                     # Actually do the undo
-                    if pupil_std_diff >= required_pupil_std_diff and undo_success == False:
+                    if pupil_std_diff >= required_pupil_std_diff and undo_success[i] == False:
+                        # disallow undo
+                        undo_success[i] = True
+                        
                         current_text = stim_writing_output.text
                         stim_writing_output.text = current_text[:-1]
-                        
-                        # disallow undo
-                        undo_success = True
-                    
                     #############
         
         # not gazing any anything
@@ -919,7 +930,7 @@ while continueRoutine:
             # reset everything else
             next_writing_frame[i] = 0
             
-            undo_success = False
+            undo_success[i] = False
         
         i += 1
         

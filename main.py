@@ -72,7 +72,7 @@ print "iViewX API Version: " + str(systemData.API_MajorVersion) + "." + str(syst
 # Calibrate iViewX
 # ---------------------------------------------
 
-calibrate = 0
+calibrate = 1
 
 if calibrate:
     calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
@@ -186,7 +186,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 pupil_circle_goal_size = 50
 
 # Time until an object is selected (in fps)
-gaze_required_time = 60 # 1 second
+gaze_required_time = 30 # 1/2 second
 
 # the interval after performing a writing operation, during which an undo operation can be performed
 undo_interval = 60
@@ -506,11 +506,13 @@ b = 0
 m = 0
 
 beginGazeTimer = False
-gazeTimer = 0
+gazeTimer = [0] * 27
+next_writing_frame = [0] * 27
+
 # quitTimer = 0
 
 #Size of selectable area around Object 3* = original
-objArea = 4 * scaling
+objArea = 2 * scaling
 
 # pupilSizeList=[]
 # pupilSizeRound=0
@@ -534,41 +536,47 @@ vertSpace = ((-2*scaling, -2*scaling),  (-2*scaling, 2*scaling), (4*scaling, 2*s
 
 # Define keys
 Y1 = -100
-formQ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y1))
-formW = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y1))
-formE = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y1))
-formR = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y1))
-formT = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y1))
-formY = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y1))
-formU = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y1))
-formI = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y1))
-formO = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y1))
-formP = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y1))
+formQ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y1), name='Q')
+formW = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y1), name='W')
+formE = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y1), name='E')
+formR = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y1), name='R')
+formT = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y1), name='T')
+formY = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y1), name='Y')
+formU = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y1), name='U')
+formI = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y1), name='I')
+formO = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y1), name='O')
+formP = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y1), name='P')
 Y2 = -200
-formA = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-400, Y2))
-formS = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2))
-formD = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-200, Y2))
-formF = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-100, Y2))
-formG = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-0, Y2))
-formH = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, Y2))
-formJ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(200, Y2))
-formK = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2))
-formL = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(400,Y2))
+formA = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-400, Y2), name='A')
+formS = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2), name='S')
+formD = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-200, Y2), name='D')
+formF = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-100, Y2), name='F')
+formG = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-0, Y2), name='G')
+formH = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, Y2), name='H')
+formJ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(200, Y2), name='J')
+formK = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2), name='K')
+formL = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(400,Y2), name='L')
 Y3 = -300
-formZ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y3))
-formX = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y3))
-formC = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y3))
-formV = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y3))
-formB = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y3))
-formN = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y3))
-formM = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y3))
+formZ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y3), name='Z')
+formX = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y3), name='X')
+formC = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y3), name='C')
+formV = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y3), name='V')
+formB = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y3), name='B')
+formN = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y3), name='N')
+formM = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y3), name='M')
 
-formSpace = visual.ShapeStim(win, fillColor=buttonColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y3))
+formSpace = visual.ShapeStim(win, fillColor=buttonColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y3), name=' ')
 
 formList = [formQ, formW, formE, formR, formT, formY, formU, formI, formO, formP, formA, formS, formD, formF, formG, formH, formJ, formK, formL, formZ, formX, formC, formV, formB, formN, formM, formSpace]
 
-posPix1 = posToPix(formList[0])
-posPix2 = posToPix(formList[1])
+c = 0
+for key in formList:
+    gazeTimer[c] = 0
+    next_writing_frame[c] = 0
+    c += 1
+
+#posPix1 = posToPix(formList[0])
+#posPix2 = posToPix(formList[1])
 
 letterQ = visual.TextStim(win, text = 'Q',  pos=(posToPix(formQ)), color=crossColor)
 letterW = visual.TextStim(win, text = 'W',  pos=(posToPix(formW)), color=crossColor)
@@ -633,7 +641,6 @@ plot_marker = 0
 mean_length = 3
 plot_buffer = 5
 
-next_writing_frame = 0
 write_same_letter_interval = 60
 
 ###################
@@ -786,119 +793,131 @@ while continueRoutine:
     stim_writing_input.text  = "Blabkjsdhf"
     stim_writing_input.draw()
 
-    # Check which of the objects is being viewed
-    objBoundary_X_1 = posPix1[0] - objArea
-    objBoundary_X_2 = posPix1[0] + objArea
-    
-    objBoundary_Y_1 = posPix1[1] - objArea
-    objBoundary_Y_2 = posPix1[1] + objArea
-    
-    
-    # which object are we looking at
-    # do loop of object boundary check
-    
-    # Are we gazing at the object?
-    if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:
+    # Do magic here
+    #posPix1 = posToPix(formList[0])
+    #posPix2 = posToPix(formList[1])
+
+    i = 0
+    for key in formList:
+        #    posPix1 = posToPix(formListst[0])
+        posPix1 = posToPix(key)
+        # Check which of the objects is being viewed
+        objBoundary_X_1 = posPix1[0] - objArea
+        objBoundary_X_2 = posPix1[0] + objArea
         
-        # Increment gaze timer
-        gazeTimer += 1
+        objBoundary_Y_1 = posPix1[1] - objArea
+        objBoundary_Y_2 = posPix1[1] + objArea
         
-        # Set the current gaze coordinates to the object's coordinates
-        gazePosX = posPix1[0]
-        gazePosY = posPix1[1]
         
-        # Update object color > Hover
-        formList[0].fillColor = colorHover
+        # which object are we looking at
+        # do loop of object boundary check
+        #circleEye = visual.RadialStim(win, tex='none', mask='none', pos=(gazeRx, gazeRy), size=(25, 25), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
+        #circleEye.draw()
+
+        # Are we gazing at the object?
+        if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:
             
-        ##################
-        # Select object
-        if gazeTimer >= gaze_required_time:
-        
-            # record the frame that we first wrote on
-            # frameNDeep = copy.deepcopy(frameN)
+            # Increment gaze timer
+            gazeTimer[i] += 1
             
-            # Update object color > Select
-            formList[0].fillColor = colorSelect
+            # Set the current gaze coordinates to the object's coordinates
+            gazePosX = posPix1[0]
+            gazePosY = posPix1[1]
             
-            iViewXAPI.iV_SendImageMessage(c_char_p('checkStart'))
-                
-            # Write a letter when the object is gazed
-            # Also keep writing the same letter specified according to a time interval
-            if next_writing_frame == 0 or frameN == next_writing_frame:
-                # print("no undo")
-                # update the interval to the next frame to write on
-                
-                if next_writing_frame == 0:
-                    # update the interval to the next frame to write on
-                    # *2: because there is an undo interval between every two write inter
-                    next_writing_frame = frameN + (write_same_letter_interval + undo_interval)
-                else:
-                    next_writing_frame += write_same_letter_interval + undo_interval
-                
-                # Write
-                stim_writing_output.text = stim_writing_output.text + "A"
-                
-                # allow undo
-                undo_success = False
+            # Update object color > Hover
+            key.fillColor = colorHover
             
-            # do undo
-            if frameN < next_writing_frame:
-                # print("--can undo" + str(frameN) + "-" + str(next_writing_frame))
+            ##################
+            # Select object
+            if gazeTimer[i] >= gaze_required_time:
+             
+                # record the frame that we first wrote on
+                # frameNDeep = copy.deepcopy(frameN)
                 
-                ############
-                # UNDO
-                ############
-                # Check eye pupil
+                # Update object color > Select
+                key.fillColor = colorSelect
                 
-                # check how many sd the current pupil value is
-                pupil_std_diff = (current_pupil_mean - baseline_mean) / baseline_sd
-                print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
-                
-                # Undo if pupil_std_diff > required number above std
-                current_pupil_change_size = (pupil_std_diff * pupil_circle_goal_size) / required_pupil_std_diff
-                if current_pupil_change_size < 0.2 * pupil_circle_goal_size: current_pupil_change_size = 0.2*pupil_circle_goal_size # minimum feedback size
-                if current_pupil_change_size > pupil_circle_goal_size: current_pupil_change_size = pupil_circle_goal_size #maximum feedback size
-                
-                # Draw eye pupil
-                
-                # The pupil eye circle
-                circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
-                
-                # The outer circle
-                circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
-                
-                # draw both circles
-                circle2.draw()
-                circle1.draw()
-                
-                # Actually do the undo
-                if pupil_std_diff >= required_pupil_std_diff and undo_success == False:
-                    current_text = stim_writing_output.text
-                    stim_writing_output.text = current_text[:-1]
+                iViewXAPI.iV_SendImageMessage(c_char_p('checkStart'))
                     
-                    # disallow undo
-                    undo_success = True
+                # Write a letter when the object is gazed
+                # Also keep writing the same letter specified according to a time interval
+                if next_writing_frame[i] == 0 or frameN == next_writing_frame[i]:
+                    # print("no undo")
+                    # update the interval to the next frame to write on
+                    
+                    if next_writing_frame[i] == 0:
+                        # update the interval to the next frame to write on
+                        # *2: because there is an undo interval between every two write inter
+                        next_writing_frame[i] = frameN + (write_same_letter_interval + undo_interval)
+                    else:
+                        next_writing_frame[i] += write_same_letter_interval + undo_interval
+                    
+                    # Write
+                    stim_writing_output.text = stim_writing_output.text + key.name
+                    
+                    # allow undo
+                    undo_success = False
                 
-                #############
-    
-    # not gazing any anything
-    # Reset gaze checker and other variables
-    else:
-        # gaze checker reset
-        # beginGazeTimer = False
-        gazeTimer = 0
+                # do undo
+                if frameN < next_writing_frame[i]:
+                    # print("--can undo" + str(frameN) + "-" + str(next_writing_frame))
+                    
+                    ############
+                    # UNDO
+                    ############
+                    # Check eye pupil
+                    
+                    # check how many sd the current pupil value is
+                    pupil_std_diff = (current_pupil_mean - baseline_mean) / baseline_sd
+                    print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
+                    
+                    # Undo if pupil_std_diff > required number above std
+                    current_pupil_change_size = (pupil_std_diff * pupil_circle_goal_size) / required_pupil_std_diff
+                    if current_pupil_change_size < 0.2 * pupil_circle_goal_size: current_pupil_change_size = 0.2*pupil_circle_goal_size # minimum feedback size
+                    if current_pupil_change_size > pupil_circle_goal_size: current_pupil_change_size = pupil_circle_goal_size #maximum feedback size
+                    
+                    # Draw eye pupil
+                    
+                    # The pupil eye circle
+                    circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
+                    
+                    # The outer circle
+                    circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
+                    
+                    # draw both circles
+                    circle2.draw()
+                    circle1.draw()
+                    
+                    # Actually do the undo
+                    if pupil_std_diff >= required_pupil_std_diff and undo_success == False:
+                        current_text = stim_writing_output.text
+                        stim_writing_output.text = current_text[:-1]
+                        
+                        # disallow undo
+                        undo_success = True
+                    
+                    #############
         
-        # Unselect all objects
-        formList[0].fillColor = buttonColor
+        # not gazing any anything
+        # Reset gaze checker and other variables
+        else:
+            # gaze checker reset
+            # beginGazeTimer = False
+            gazeTimer[i] = 0
+            
+            # Unselect all objects
+            key.fillColor = buttonColor
+            
+            # reset everything else
+            next_writing_frame[i] = 0
+            
+            undo_success = False
         
-        # reset everything else
-        next_writing_frame = 0
+        i += 1
         
-        undo_success = False
+        #########################################################
         
-    #########################################################
-    
-    # *text_2* updates
+        # *text_2* updates
     if t >= 0.0 and text_2.status == NOT_STARTED:
         text_2.tStart = t
         text_2.frameNStart = frameN

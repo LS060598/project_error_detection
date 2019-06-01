@@ -205,7 +205,7 @@ posPix = 0
 formList = []
 
 radius = 300
-buttonColor = '#a6a6a6'
+keyColor = '#a6a6a6'
  
 colorHover = '#81dbcf'
 colorSelect = '#80DBA1'
@@ -213,9 +213,7 @@ colorSelect = '#80DBA1'
 dwellTimeColor='#808080'
 dwellTimeBackgroundColor='#dadada'
 
-crossColor = '#333333'
-crossColorHover ='#56A399'
-crossLength = 45
+letterColor = '#333333'
 
 buttonLineColor = '#707070'
 buttonHoverLineColor= '#000000'
@@ -539,86 +537,77 @@ vertSpace = ((-2*scaling, -2*scaling),  (-2*scaling, 2*scaling), (4*scaling, 2*s
 
 # Define keys
 Y1 = -100
-formQ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y1), name='Q')
-formW = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y1), name='W')
-formE = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y1), name='E')
-formR = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y1), name='R')
-formT = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y1), name='T')
-formY = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y1), name='Y')
-formU = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y1), name='U')
-formI = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y1), name='I')
-formO = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y1), name='O')
-formP = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y1), name='P')
+formQ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y1), name='Q')
+formW = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y1), name='W')
+formE = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y1), name='E')
+formR = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y1), name='R')
+formT = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y1), name='T')
+formY = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y1), name='Y')
+formU = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y1), name='U')
+formI = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y1), name='I')
+formO = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y1), name='O')
+formP = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y1), name='P')
 Y2 = -200
-formA = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-400, Y2), name='A')
-formS = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2), name='S')
-formD = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-200, Y2), name='D')
-formF = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-100, Y2), name='F')
-formG = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-0, Y2), name='G')
-formH = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, Y2), name='H')
-formJ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(200, Y2), name='J')
-formK = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2), name='K')
-formL = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(400,Y2), name='L')
+formA = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-400, Y2), name='A')
+formS = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2), name='S')
+formD = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-200, Y2), name='D')
+formF = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-100, Y2), name='F')
+formG = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-0, Y2), name='G')
+formH = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, Y2), name='H')
+formJ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(200, Y2), name='J')
+formK = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2), name='K')
+formL = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(400,Y2), name='L')
 Y3 = -300
-formZ = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y3), name='Z')
-formX = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y3), name='X')
-formC = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y3), name='C')
-formV = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y3), name='V')
-formB = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y3), name='B')
-formN = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y3), name='N')
-formM = visual.ShapeStim(win, fillColor=buttonColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y3), name='M')
+formZ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y3), name='Z')
+formX = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y3), name='X')
+formC = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y3), name='C')
+formV = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y3), name='V')
+formB = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y3), name='B')
+formN = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y3), name='N')
+formM = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y3), name='M')
 
-formSpace = visual.ShapeStim(win, fillColor=buttonColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y3), name=' ')
+formSpace = visual.ShapeStim(win, fillColor=keyColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y3), name=' ')
 
 formList = [formQ, formW, formE, formR, formT, formY, formU, formI, formO, formP, formA, formS, formD, formF, formG, formH, formJ, formK, formL, formZ, formX, formC, formV, formB, formN, formM, formSpace]
 
-c = 0
+keyCounter = 0
 for key in formList:
-    gazeTimer[c] = 0
-    next_writing_frame[c] = 0
-    c += 1
+    gazeTimer[keyCounter] = 0
+    next_writing_frame[keyCounter] = 0
+    keyCounter += 1
 
-#posPix1 = posToPix(formList[0])
-#posPix2 = posToPix(formList[1])
+letterQ = visual.TextStim(win, text = 'Q',  pos=(posToPix(formQ)), color=letterColor)
+letterW = visual.TextStim(win, text = 'W',  pos=(posToPix(formW)), color=letterColor)
+letterE = visual.TextStim(win, text = 'E',  pos=(posToPix(formE)), color=letterColor)
+letterR = visual.TextStim(win, text = 'R',  pos=(posToPix(formR)), color=letterColor)
+letterT = visual.TextStim(win, text = 'T',  pos=(posToPix(formT)), color=letterColor)
+letterY = visual.TextStim(win, text = 'Y',  pos=(posToPix(formY)), color=letterColor)
+letterU = visual.TextStim(win, text = 'U',  pos=(posToPix(formU)), color=letterColor)
+letterI = visual.TextStim(win, text = 'I',  pos=(posToPix(formI)), color=letterColor)
+letterO = visual.TextStim(win, text = 'O',  pos=(posToPix(formO)), color=letterColor)
+letterP = visual.TextStim(win, text = 'P',  pos=(posToPix(formP)), color=letterColor)
 
-letterQ = visual.TextStim(win, text = 'Q',  pos=(posToPix(formQ)), color=crossColor)
-letterW = visual.TextStim(win, text = 'W',  pos=(posToPix(formW)), color=crossColor)
-letterE = visual.TextStim(win, text = 'E',  pos=(posToPix(formE)), color=crossColor)
-letterR = visual.TextStim(win, text = 'R',  pos=(posToPix(formR)), color=crossColor)
-letterT = visual.TextStim(win, text = 'T',  pos=(posToPix(formT)), color=crossColor)
-letterY = visual.TextStim(win, text = 'Y',  pos=(posToPix(formY)), color=crossColor)
-letterU = visual.TextStim(win, text = 'U',  pos=(posToPix(formU)), color=crossColor)
-letterI = visual.TextStim(win, text = 'I',  pos=(posToPix(formI)), color=crossColor)
-letterO = visual.TextStim(win, text = 'O',  pos=(posToPix(formO)), color=crossColor)
-letterP = visual.TextStim(win, text = 'P',  pos=(posToPix(formP)), color=crossColor)
+letterA = visual.TextStim(win, text = 'A',  pos=(posToPix(formA)), color=letterColor)
+letterS = visual.TextStim(win, text = 'S',  pos=(posToPix(formS)), color=letterColor)
+letterD = visual.TextStim(win, text = 'D',  pos=(posToPix(formD)), color=letterColor)
+letterF = visual.TextStim(win, text = 'F',  pos=(posToPix(formF)), color=letterColor)
+letterG = visual.TextStim(win, text = 'G',  pos=(posToPix(formG)), color=letterColor)
+letterH = visual.TextStim(win, text = 'H',  pos=(posToPix(formH)), color=letterColor)
+letterJ = visual.TextStim(win, text = 'J',  pos=(posToPix(formJ)), color=letterColor)
+letterK = visual.TextStim(win, text = 'K',  pos=(posToPix(formK)), color=letterColor)
+letterL = visual.TextStim(win, text = 'L',  pos=(posToPix(formL)), color=letterColor)
 
-letterA = visual.TextStim(win, text = 'A',  pos=(posToPix(formA)), color=crossColor)
-letterS = visual.TextStim(win, text = 'S',  pos=(posToPix(formS)), color=crossColor)
-letterD = visual.TextStim(win, text = 'D',  pos=(posToPix(formD)), color=crossColor)
-letterF = visual.TextStim(win, text = 'F',  pos=(posToPix(formF)), color=crossColor)
-letterG = visual.TextStim(win, text = 'G',  pos=(posToPix(formG)), color=crossColor)
-letterH = visual.TextStim(win, text = 'H',  pos=(posToPix(formH)), color=crossColor)
-letterJ = visual.TextStim(win, text = 'J',  pos=(posToPix(formJ)), color=crossColor)
-letterK = visual.TextStim(win, text = 'K',  pos=(posToPix(formK)), color=crossColor)
-letterL = visual.TextStim(win, text = 'L',  pos=(posToPix(formL)), color=crossColor)
+letterZ = visual.TextStim(win, text = 'Z',  pos=(posToPix(formZ)), color=letterColor)
+letterX = visual.TextStim(win, text = 'X',  pos=(posToPix(formX)), color=letterColor)
+letterC = visual.TextStim(win, text = 'C',  pos=(posToPix(formC)), color=letterColor)
+letterV = visual.TextStim(win, text = 'V',  pos=(posToPix(formV)), color=letterColor)
+letterB = visual.TextStim(win, text = 'B',  pos=(posToPix(formB)), color=letterColor)
+letterN = visual.TextStim(win, text = 'N',  pos=(posToPix(formN)), color=letterColor)
+letterM = visual.TextStim(win, text = 'M',  pos=(posToPix(formM)), color=letterColor)
 
-letterZ = visual.TextStim(win, text = 'Z',  pos=(posToPix(formZ)), color=crossColor)
-letterX = visual.TextStim(win, text = 'X',  pos=(posToPix(formX)), color=crossColor)
-letterC = visual.TextStim(win, text = 'C',  pos=(posToPix(formC)), color=crossColor)
-letterV = visual.TextStim(win, text = 'V',  pos=(posToPix(formV)), color=crossColor)
-letterB = visual.TextStim(win, text = 'B',  pos=(posToPix(formB)), color=crossColor)
-letterN = visual.TextStim(win, text = 'N',  pos=(posToPix(formN)), color=crossColor)
-letterM = visual.TextStim(win, text = 'M',  pos=(posToPix(formM)), color=crossColor)
+letterSpace = visual.TextStim(win, text = '  SPACE',  pos=(posToPix(formSpace)), color=letterColor)
 
-letterSpace = visual.TextStim(win, text = '  SPACE',  pos=(posToPix(formSpace)), color=crossColor)
-
-letterList=[letterQ,letterW,letterE,letterR,letterT,letterY,letterU,letterI,letterO,letterP,letterA,letterS,letterD,letterF,letterG,letterH,letterJ,letterK,letterL,letterZ,letterX,letterC,letterV,letterB,letterN,letterM,letterSpace]
-
-# imgCorrect = visual.ImageStim(win, image='images/checkmarkRight.png', mask=None, pos=(posPix1[0], posPix1[1]), size=96, units=u'pix', ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
-
-# imgFalse = visual.ImageStim(win, image='images/checkmarkWrong.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
-# imgTimeout = visual.ImageStim(win, image='images/checkmarkTimeout.png', mask=None, pos=(0.0, 0.0), size=96, units=u'pix',  ori=0.0, opacity=1.0, depth=0, interpolate=True, flipHoriz=False, flipVert=False, texRes=128, name=None, autoLog=None, maskParams=None)
-
+letterList=[letterQ, letterW, letterE, letterR, letterT, letterY, letterU, letterI, letterO, letterP, letterA, letterS, letterD, letterF, letterG, letterH, letterJ, letterK, letterL, letterZ, letterX, letterC, letterV, letterB, letterN, letterM, letterSpace]
 ################################
 
 psizeliste = [0]*36000 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
@@ -787,20 +776,19 @@ while continueRoutine:
     
     #############################################
     
-    ### Draw the objects and crosses on them
+    ### Draw the keys and letters on them
     for key in formList:
         key.draw()
     
     for letter in letterList:
         letter.draw()
 
+	### Draw text to input
     stim_writing_input.text  = "HELLO WORLD"
     stim_writing_input.draw()
 
-    # Do magic here
-    #posPix1 = posToPix(formList[0])
-    #posPix2 = posToPix(formList[1])
-    
+    ### Do magic here
+	# Make cursor blink	
     cursorTimer += 1
     
     if cursorTimer >= 60:
@@ -809,46 +797,41 @@ while continueRoutine:
     elif cursorTimer == 30:
         stim_writing_output.text = stim_writing_output.text + '_'
     
-    i = 0
+    keyCounter = 0
     for key in formList:
-        #    posPix1 = posToPix(formListst[0])
-        posPix1 = posToPix(key)
+        posPix = posToPix(key)
         # Check which of the objects is being viewed
         
+		# Make space have a bigger area
         if key.name == ' ':
-            objBoundary_X_1 = posPix1[0] - objArea
-            objBoundary_X_2 = posPix1[0] + (objArea*2)
+            objBoundary_X_1 = posPix[0] - objArea
+            objBoundary_X_2 = posPix[0] + (objArea*2)
         
-            objBoundary_Y_1 = posPix1[1] - objArea
-            objBoundary_Y_2 = posPix1[1] + objArea
+            objBoundary_Y_1 = posPix[1] - objArea
+            objBoundary_Y_2 = posPix[1] + objArea
         else:
-            objBoundary_X_1 = posPix1[0] - objArea
-            objBoundary_X_2 = posPix1[0] + objArea
+            objBoundary_X_1 = posPix[0] - objArea
+            objBoundary_X_2 = posPix[0] + objArea
         
-            objBoundary_Y_1 = posPix1[1] - objArea
-            objBoundary_Y_2 = posPix1[1] + objArea
-
-        # which object are we looking at
-        # do loop of object boundary check
-        #circleEye = visual.RadialStim(win, tex='none', mask='none', pos=(gazeRx, gazeRy), size=(25, 25), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
-        #circleEye.draw()
+            objBoundary_Y_1 = posPix[1] - objArea
+            objBoundary_Y_2 = posPix[1] + objArea
 
         # Are we gazing at the object?
         if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:
             
             # Increment gaze timer
-            gazeTimer[i] += 1
+            gazeTimer[keyCounter] += 1
             
             # Set the current gaze coordinates to the object's coordinates
-            gazePosX = posPix1[0]
-            gazePosY = posPix1[1]
+            gazePosX = posPix[0]
+            gazePosY = posPix[1]
             
             # Update object color > Hover
             key.fillColor = colorHover
             
             ##################
             # Select object
-            if gazeTimer[i] >= gaze_required_time:
+            if gazeTimer[keyCounter] >= gaze_required_time:
              
                 # record the frame that we first wrote on
                 # frameNDeep = copy.deepcopy(frameN)
@@ -860,26 +843,27 @@ while continueRoutine:
                     
                 # Write a letter when the object is gazed
                 # Also keep writing the same letter specified according to a time interval
-                if next_writing_frame[i] == 0 or frameN == next_writing_frame[i]:
+                if next_writing_frame[keyCounter] == 0 or frameN == next_writing_frame[keyCounter]:
                     # print("no undo")
                     # update the interval to the next frame to write on
                     
-                    if next_writing_frame[i] == 0:
+                    if next_writing_frame[keyCounter] == 0:
                         # update the interval to the next frame to write on
                         # *2: because there is an undo interval between every two write inter
-                        next_writing_frame[i] = frameN + (write_same_letter_interval + undo_interval)
+                        next_writing_frame[keyCounter] = frameN + (write_same_letter_interval + undo_interval)
                     else:
-                        next_writing_frame[i] += write_same_letter_interval + undo_interval
+                        next_writing_frame[keyCounter] += write_same_letter_interval + undo_interval
                     
                     # Write
                     stim_writing_output.text = stim_writing_output.text.replace('_', '')
                     stim_writing_output.text = stim_writing_output.text + key.name
+					cursorTimer = 0
                     
                     # allow undo
-                    undo_success[i] = False
+                    undo_success[keyCounter] = False
                 
                 # do undo
-                if frameN < next_writing_frame[i]:
+                if frameN < next_writing_frame[keyCounter]:
                     # print("--can undo" + str(frameN) + "-" + str(next_writing_frame))
                     
                     ############
@@ -909,9 +893,9 @@ while continueRoutine:
                     circle1.draw()
                     
                     # Actually do the undo
-                    if pupil_std_diff >= required_pupil_std_diff and undo_success[i] == False:
+                    if pupil_std_diff >= required_pupil_std_diff and undo_success[keyCounter] == False:
                         # disallow undo
-                        undo_success[i] = True
+                        undo_success[keyCounter] = True
                         
                         current_text = stim_writing_output.text
                         stim_writing_output.text = current_text[:-1]
@@ -922,17 +906,17 @@ while continueRoutine:
         else:
             # gaze checker reset
             # beginGazeTimer = False
-            gazeTimer[i] = 0
+            gazeTimer[keyCounter] = 0
             
             # Unselect all objects
-            key.fillColor = buttonColor
+            key.fillColor = keyColor
             
             # reset everything else
-            next_writing_frame[i] = 0
+            next_writing_frame[keyCounter] = 0
             
-            undo_success[i] = False
+            undo_success[keyCounter] = False
         
-        i += 1
+        keyCounter += 1
         
         #########################################################
         

@@ -73,6 +73,7 @@ print "iViewX API Version: " + str(systemData.API_MajorVersion) + "." + str(syst
 # ---------------------------------------------
 
 calibrate = 0
+debug=True
 
 if calibrate:
     calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
@@ -194,7 +195,7 @@ cursorTimer = 0
 undo_interval = 60
 
 # the pupil value required above the baseline sd to perform an undo operation
-required_pupil_std_diff = 1
+required_pupil_std_diff = 0.35
 
 #Factor of scaling object size
 scaling = 20
@@ -207,8 +208,8 @@ formList = []
 radius = 300
 keyColor = '#a6a6a6'
  
-colorHover = '#81dbcf'
-colorSelect = '#80DBA1'
+colorHover = '#dbcf81'
+colorSelect = '#80dba1'
 
 dwellTimeColor='#808080'
 dwellTimeBackgroundColor='#dadada'
@@ -218,279 +219,6 @@ letterColor = '#333333'
 buttonLineColor = '#707070'
 buttonHoverLineColor= '#000000'
 buttonLineWidth = 1
-
-# required for the baseline algorithm
-psizeliste = [0]*900 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
-psize = 0
-
-
-
-#################################################
-# Start Routine: baselineInstruction
-#################################################
-
-key_resp_3 = event.BuilderKeyResponse()
-
-# keep track of which components have finished
-baselineInstructionComponents = [stim_baseline_instruction, key_resp_3]
-
-for thisComponent in baselineInstructionComponents:
-    if hasattr(thisComponent, 'status'): thisComponent.status = NOT_STARTED
-
-t = 0
-baselineInstructionClock = core.Clock()
-baselineInstructionClock.reset()
-frameN = -1
-continueRoutine = True
-while continueRoutine:
-    # Current time and frame
-    t = baselineInstructionClock.getTime()
-    frameN = frameN + 1
-    
-    # *stim_baseline_instruction* updates
-    if t >= 0.0 and stim_baseline_instruction.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        stim_baseline_instruction.tStart = t
-        stim_baseline_instruction.frameNStart = frameN  # exact frame index
-        stim_baseline_instruction.setAutoDraw(True)
-    
-    # *key_resp_3* updates
-    if t >= 0.0 and key_resp_3.status == NOT_STARTED:
-        key_resp_3.tStart = t
-        key_resp_3.frameNStart = frameN
-        key_resp_3.status = STARTED
-        
-        # keyboard checking is just starting
-        event.clearEvents(eventType='keyboard')
-        
-    if key_resp_3.status == STARTED:
-        theseKeys = event.getKeys(keyList=['space'])
-        
-        # check for quit:
-        if "escape" in theseKeys:
-            endExpNow = True
-        if len(theseKeys) > 0:  # at least one key was pressed
-            continueRoutine = False
-    
-    # check if all components have finished
-    if not continueRoutine: break
-        
-    continueRoutine = False
-    
-    for thisComponent in baselineInstructionComponents:
-        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-            continueRoutine = True
-            break
-    
-    # check for quit (the Esc key)
-    if endExpNow or event.getKeys(keyList=["escape"]): core.quit()
-    
-    # refresh the screen
-    if continueRoutine: win.flip()
-# --end while
-
-# -------Ending Routine "baselineInstruction"-------
-for thisComponent in baselineInstructionComponents:
-    if hasattr(thisComponent, "setAutoDraw"): thisComponent.setAutoDraw(False)
-routineTimer.reset()
-
-#################################################
-# Start Routine: baseline
-#################################################
-routineTimer.add(5.000000)
-
-# algorithm code (just use as is)
-
-bsize_liste = [0]*900 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
-bsize = 0
-
-# starting values
-state_no = 0
-lmarker = -1
-delay_size = 2
-
-# filter preferences
-step_limit = 0.19    # 30Hz: 0.19 | 60Hz: 0.09
-lower_th = 2
-
-# cross
-baseline_cross_1 = visual.Line(win, start=(0, -20), end=(0, 20), lineColor=(-1, -1, -1))
-baseline_cross_2 = visual.Line(win, start=(-20, 0), end=(20, 0), lineColor=(-1, -1, -1))
-
-#######
-iViewXAPI.iV_StartRecording()
-
-# keep track of which components have finished
-baselineComponents = [text_8]
-for thisComponent in baselineComponents:
-    if hasattr(thisComponent, 'status'): thisComponent.status = NOT_STARTED
-
-t = 0
-baselineClock = core.Clock()
-baselineClock.reset()
-frameN = -1
-continueRoutine = True
-while continueRoutine and routineTimer.getTime() > 0:
-    # Current time and frame
-    t = baselineClock.getTime()
-    frameN = frameN + 1
-    
-    # API Call
-    # Collect pupil eye diameter
-    res = iViewXAPI.iV_GetSample(byref(sampleData))
-    bsize = (sampleData.leftEye.diam) # /32 fur highspeed eyetracker, ohne /32 fur RED
-    
-    # The following if statements remove blinks, etc. Use as is
-    
-    #--------------------
-    # state 0: starting
-    #--------------------
-    if state_no == 0:
-        if lmarker < 1:
-            lmarker = lmarker + 1
-            bsize_liste[lmarker] = bsize
-            state_next = 0
-     
-        else:
-            if bsize > lower_th and bsize_liste[lmarker] > lower_th and bsize_liste[lmarker-1] > lower_th and (abs(bsize-bsize_liste[lmarker]) <= step_limit) and (abs(bsize_liste[lmarker]-bsize_liste[lmarker-1]) <= step_limit):
-                lmarker = lmarker + 1
-                bsize_liste[lmarker] = bsize
-                state_next = 1
-            else:
-                bsize_liste[lmarker-1] = bsize_liste[lmarker]
-                bsize_liste[lmarker] = bsize
-
-                state_next = 0
-
-    #----------------------
-    # state 1: observation
-    #----------------------
-    if state_no == 1:
-
-        # Filter Activation
-        #- - - - - - - - - - -
-        if bsize <= lower_th:
-            on = 1
-            jump_marker = lmarker + 1 # marks values to be replaced 
-      
-            # Identification of last valid_value before the blink
-            #- - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            while on == 1:
-                if bsize_liste[lmarker] >= lower_th and bsize_liste[lmarker-1] >= lower_th and bsize_liste[lmarker-2] >= lower_th and abs(bsize_liste[lmarker]-bsize_liste[lmarker-1]) <= step_limit and abs(bsize_liste[lmarker-1]-bsize_liste[lmarker-2]) <= step_limit:
-                    valid_value = bsize_liste[lmarker]
-                    lmarker = lmarker + 1
-                    for i in range(lmarker, jump_marker, 1):
-                        bsize_liste[i] = valid_value
-
-                    bsize_liste[jump_marker] = valid_value
-
-                    lmarker = jump_marker
-                    puffer_size = jump_marker + delay_size
-
-                    on = 0
-                    state_next = 2
-
-                else:
-                    lmarker = lmarker-1
-
-        else:
-            lmarker = lmarker + 1
-            bsize_liste[lmarker] = bsize
-
-            state_next = 1
-    
-    #-------------------------------------------------------------
-    # state 2: identification of next valid_value after the blink
-    #-------------------------------------------------------------
-    
-    if state_no == 2:
-        # collecting values following the blink
-        #- - - - - - - - - - - - - - - - - - - - - -
-        if lmarker < puffer_size:
-            lmarker = lmarker + 1
-            bsize_liste[lmarker] = bsize
-
-            state_next = 2
-    
-        else:
-            # identification of next valid_value after the blink
-            #- - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-            if bsize > lower_th and abs(bsize-bsize_liste[lmarker]) <= step_limit and abs(bsize_liste[lmarker]-bsize_liste[lmarker-1]) <= step_limit:               
-                lmarker = lmarker + 1
-                bsize_liste[lmarker] = bsize
-
-                state_next = 1
-        
-            else:
-                lmarker = lmarker + 1
-                bsize_liste[lmarker] = bsize
-                bsize_liste[lmarker-2] = valid_value
-
-                state_next = 2
-    
-    state_no = state_next
-    
-    # Draw the crosses
-    baseline_cross_1.draw()
-    baseline_cross_2.draw()
-    
-    # *text_8* updates
-    if t >= 0.0 and text_8.status == NOT_STARTED:
-        # keep track of start time/frame for later
-        text_8.tStart = t
-        text_8.frameNStart = frameN  # exact frame index
-        text_8.setAutoDraw(True)
-        
-    frameRemains = 0.0 + 10 - win.monitorFramePeriod * 0.75  # most of one frame period left
-    
-    if text_8.status == STARTED and t >= frameRemains:
-        text_8.setAutoDraw(False)
-    
-    # check if all components have finished
-    if not continueRoutine: break
-    
-    continueRoutine = False
-    for thisComponent in baselineComponents:
-        if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-            continueRoutine = True
-            break
-    
-    # check for quit (the Esc key)
-    if endExpNow or event.getKeys(keyList=["escape"]): core.quit()
-    
-    # refresh the screen
-    if continueRoutine: win.flip()
-# end while
-
-# -------Ending Routine "baseline"-------
-for thisComponent in baselineComponents:
-    if hasattr(thisComponent, "setAutoDraw"): thisComponent.setAutoDraw(False)
-routineTimer.reset()
-
-iViewXAPI.iV_StopRecording()
-iViewXAPI.iV_SaveData(str(dir_experiment + expName +expInfo['participant'] + '_baseline'), str(), str(),1)
-
-### Eye pupil diameter
-
-# Baseline mean
-bsize_liste = filter(None, bsize_liste)
-baseline_mean = round((sum(bsize_liste)/(len(bsize_liste))),2)
-
-# Baseline sd
-baseline_sd = abs(round(np.std(bsize_liste),8))
-
-# prevent very low baseline values from affecting our study later
-if baseline_sd < 0.5:
-    baseline_sd = 0.5
-
-# Percent-change: sd / mean
-# prozent_change1 = round((baseline_sd/baseline_mean),2)
-    
-# Save data
-thisExp.addData('Baseline_Liste', bsize_liste)
-thisExp.addData('Baseline_Mittelwert', baseline_mean)
-thisExp.addData('Baseline_Standardabweichung', baseline_sd)
-
 
 #################################################
 # Start Routine: Live writing
@@ -613,6 +341,8 @@ letterList=[letterQ, letterW, letterE, letterR, letterT, letterY, letterU, lette
 psizeliste = [0]*36000 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
 psize = 0
 current_pupil_mean = 0
+selectionCounter=0
+bsize_liste=[0.0]*3
 
 psizeliste_len = len(psizeliste)
 
@@ -783,12 +513,12 @@ while continueRoutine:
     for letter in letterList:
         letter.draw()
 
-	### Draw text to input
+    ### Draw text to input
     stim_writing_input.text  = "HELLO WORLD"
     stim_writing_input.draw()
 
     ### Do magic here
-	# Make cursor blink	
+    # Make cursor blink	
     cursorTimer += 1
     
     if cursorTimer >= 60:
@@ -802,7 +532,7 @@ while continueRoutine:
         posPix = posToPix(key)
         # Check which of the objects is being viewed
         
-		# Make space have a bigger area
+        # Make space have a bigger area
         if key.name == ' ':
             objBoundary_X_1 = posPix[0] - objArea
             objBoundary_X_2 = posPix[0] + (objArea*2)
@@ -819,6 +549,36 @@ while continueRoutine:
         # Are we gazing at the object?
         if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:
             
+            # API Call
+            # Collect pupil eye diameter
+            res = iViewXAPI.iV_GetSample(byref(sampleData))
+            bsize = (sampleData.leftEye.diam) # /32 fur highspeed eyetracker, ohne /32 fur RED
+            if bsize > 0.0:
+                if bsize_liste[0] == 0.0:
+                    bsize_liste[1] = bsize
+                    bsize_liste[2] = bsize
+                bsize_liste[selectionCounter] = bsize
+
+            ### Eye pupil diameter
+            if selectionCounter >=2:
+                selectionCounter = 0
+                
+                # Baseline mean
+                bsize_liste = filter(None, bsize_liste)
+                baseline_mean = round((sum(bsize_liste)/(len(bsize_liste))),2)
+
+                # Baseline sd
+                baseline_sd = abs(round(np.std(bsize_liste),8))
+
+                # prevent very low baseline values from affecting our study later
+                if baseline_sd < 0.5:
+                    baseline_sd = 0.5
+
+                # Percent-change: sd / mean
+                # prozent_change1 = round((baseline_sd/baseline_mean),2)
+            else:
+                selectionCounter += 1
+              
             # Increment gaze timer
             gazeTimer[keyCounter] += 1
             
@@ -857,7 +617,11 @@ while continueRoutine:
                     # Write
                     stim_writing_output.text = stim_writing_output.text.replace('_', '')
                     stim_writing_output.text = stim_writing_output.text + key.name
-					cursorTimer = 0
+                    if not stim_writing_input.text.startswith(stim_writing_output.text):
+                        stim_writing_output.color='red'
+                    else:
+                        stim_writing_output.color='white'
+                    cursorTimer = 0
                     
                     # allow undo
                     undo_success[keyCounter] = False
@@ -880,17 +644,15 @@ while continueRoutine:
                     if current_pupil_change_size < 0.2 * pupil_circle_goal_size: current_pupil_change_size = 0.2*pupil_circle_goal_size # minimum feedback size
                     if current_pupil_change_size > pupil_circle_goal_size: current_pupil_change_size = pupil_circle_goal_size #maximum feedback size
                     
-                    # Draw eye pupil
-                    
-                    # The pupil eye circle
-                    circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
-                    
-                    # The outer circle
-                    circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
-                    
-                    # draw both circles
-                    circle2.draw()
-                    circle1.draw()
+                    if debug:
+                        # Draw eye pupil
+                        # The pupil eye circle
+                        circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
+                        # The outer circle
+                        circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
+                        # draw both circles
+                        circle2.draw()
+                        circle1.draw()
                     
                     # Actually do the undo
                     if pupil_std_diff >= required_pupil_std_diff and undo_success[keyCounter] == False:

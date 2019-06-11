@@ -73,7 +73,7 @@ print "iViewX API Version: " + str(systemData.API_MajorVersion) + "." + str(syst
 # ---------------------------------------------
 
 calibrate = 0
-debug=True
+debug=False
 
 if calibrate:
     calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
@@ -187,7 +187,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 pupil_circle_goal_size = 50
 
 # Time until an object is selected (in fps)
-gaze_required_time = 25 # 1/nth second
+gaze_required_time = 15 # 1/nth second
 
 cursorTimer = 0
 
@@ -195,7 +195,7 @@ cursorTimer = 0
 undo_interval = 60
 
 # the pupil value required above the baseline sd to perform an undo operation
-required_pupil_std_diff = 0.35
+required_pupil_std_diff = 0.99
 
 #Factor of scaling object size
 scaling = 20
@@ -219,6 +219,7 @@ letterColor = '#333333'
 buttonLineColor = '#707070'
 buttonHoverLineColor= '#000000'
 buttonLineWidth = 1
+undoCounter = 99
 
 #################################################
 # Start Routine: Live writing
@@ -338,11 +339,15 @@ letterSpace = visual.TextStim(win, text = '  SPACE',  pos=(posToPix(formSpace)),
 letterList=[letterQ, letterW, letterE, letterR, letterT, letterY, letterU, letterI, letterO, letterP, letterA, letterS, letterD, letterF, letterG, letterH, letterJ, letterK, letterL, letterZ, letterX, letterC, letterV, letterB, letterN, letterM, letterSpace]
 ################################
 
+sentenceList = ["HELLO WORLD", "PSYCHOPY IS AWESOME", "LOREM IPSUM DOLOR SIT AMET"]
+
 psizeliste = [0]*36000 # ca. 900 bei 30Hz | ca. 1900 bei 60Hz
 psize = 0
 current_pupil_mean = 0
 selectionCounter=0
 bsize_liste=[0.0]*3
+letterTyped = False
+sentenceCounter = 0
 
 psizeliste_len = len(psizeliste)
 
@@ -513,8 +518,23 @@ while continueRoutine:
     for letter in letterList:
         letter.draw()
 
-    ### Draw text to input
-    stim_writing_input.text  = "HELLO WORLD"
+    #Delete output text if backspace is pressed
+    if  len(event.getKeys(keyList=['backspace']) ) > 0:
+        stim_writing_output.text = ''
+        stim_writing_output.color = 'white'
+
+    #Iterate through sentenceList if space is pressed
+    if  len(event.getKeys(keyList=['space']) ) > 0:
+        sentenceCounter += 1
+        stim_writing_output.text = ''
+        stim_writing_output.color = 'white'
+    
+    #Safely quit if end of sentenceList is reached
+    if sentenceCounter >= len(sentenceList):
+        core.quit()
+     
+    ### Draw text to input   
+    stim_writing_input.text  = sentenceList[sentenceCounter]
     stim_writing_input.draw()
 
     ### Do magic here
@@ -522,10 +542,46 @@ while continueRoutine:
     cursorTimer += 1
     
     if cursorTimer >= 60:
-        stim_writing_output.text = stim_writing_output.text.replace('_', '')
+        stim_writing_output.text = stim_writing_output.text.replace('|', '')
         cursorTimer = 0
     elif cursorTimer == 30:
-        stim_writing_output.text = stim_writing_output.text + '_'
+        stim_writing_output.text = stim_writing_output.text + '|'
+    
+    # allow undo if within 1 second time frame since last key is pressed
+    if undoCounter < 60:
+    # print("--can undo" + str(frameN) + "-" + str(next_writing_frame))
+        ############
+        # UNDO
+        ############
+        # Check eye pupil
+        # check how many sd the current pupil value is
+        pupil_std_diff = (current_pupil_mean - baseline_mean) / baseline_sd
+        print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
+                   
+         # Undo if pupil_std_diff > required number above std
+        current_pupil_change_size = (pupil_std_diff * pupil_circle_goal_size) / required_pupil_std_diff
+        if current_pupil_change_size < 0.2 * pupil_circle_goal_size: current_pupil_change_size = 0.2*pupil_circle_goal_size # minimum feedback size
+        if current_pupil_change_size > pupil_circle_goal_size: current_pupil_change_size = pupil_circle_goal_size #maximum feedback size
+                    
+        if debug:
+            # Draw eye pupil
+            # The pupil eye circle
+            circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
+            # The outer circle
+            circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
+            # draw both circles
+            circle2.draw()
+            circle1.draw()
+           
+        # Actually do the undo
+        if pupil_std_diff >= required_pupil_std_diff and letterTyped:
+            # disallow undo
+            undoCounter = 99
+            letterTyped = False
+            current_text = stim_writing_output.text
+            stim_writing_output.text = current_text[:-1]
+        #############
+    undoCounter += 1
     
     keyCounter = 0
     for key in formList:
@@ -559,12 +615,13 @@ while continueRoutine:
                     bsize_liste[2] = bsize
                 bsize_liste[selectionCounter] = bsize
 
-            ### Eye pupil diameter
+            ### Eye pupil diameter over the last three key selections
             if selectionCounter >=2:
                 selectionCounter = 0
                 
                 # Baseline mean
                 bsize_liste = filter(None, bsize_liste)
+                # if programme crashes to often: replace (len(bsize_liste))) with 3
                 baseline_mean = round((sum(bsize_liste)/(len(bsize_liste))),2)
 
                 # Baseline sd
@@ -592,7 +649,7 @@ while continueRoutine:
             ##################
             # Select object
             if gazeTimer[keyCounter] >= gaze_required_time:
-             
+                undoCounter = 0
                 # record the frame that we first wrote on
                 # frameNDeep = copy.deepcopy(frameN)
                 
@@ -615,53 +672,14 @@ while continueRoutine:
                         next_writing_frame[keyCounter] += write_same_letter_interval + undo_interval
                     
                     # Write
-                    stim_writing_output.text = stim_writing_output.text.replace('_', '')
+                    stim_writing_output.text = stim_writing_output.text.replace('|', '')
                     stim_writing_output.text = stim_writing_output.text + key.name
                     if not stim_writing_input.text.startswith(stim_writing_output.text):
                         stim_writing_output.color='red'
                     else:
                         stim_writing_output.color='white'
+                    letterTyped = True
                     cursorTimer = 0
-                    
-                    # allow undo
-                    undo_success[keyCounter] = False
-                
-                # do undo
-                if frameN < next_writing_frame[keyCounter]:
-                    # print("--can undo" + str(frameN) + "-" + str(next_writing_frame))
-                    
-                    ############
-                    # UNDO
-                    ############
-                    # Check eye pupil
-                    
-                    # check how many sd the current pupil value is
-                    pupil_std_diff = (current_pupil_mean - baseline_mean) / baseline_sd
-                    print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
-                    
-                    # Undo if pupil_std_diff > required number above std
-                    current_pupil_change_size = (pupil_std_diff * pupil_circle_goal_size) / required_pupil_std_diff
-                    if current_pupil_change_size < 0.2 * pupil_circle_goal_size: current_pupil_change_size = 0.2*pupil_circle_goal_size # minimum feedback size
-                    if current_pupil_change_size > pupil_circle_goal_size: current_pupil_change_size = pupil_circle_goal_size #maximum feedback size
-                    
-                    if debug:
-                        # Draw eye pupil
-                        # The pupil eye circle
-                        circle1 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(current_pupil_change_size, current_pupil_change_size), color=dwellTimeColor, colorSpace='hex', depth=1, interpolate=True)
-                        # The outer circle
-                        circle2 = visual.RadialStim(win, tex='none', mask='none', pos=(gazePosX, gazePosY), size=(pupil_circle_goal_size, pupil_circle_goal_size), color=dwellTimeBackgroundColor, colorSpace='hex', depth=1, interpolate=True)
-                        # draw both circles
-                        circle2.draw()
-                        circle1.draw()
-                    
-                    # Actually do the undo
-                    if pupil_std_diff >= required_pupil_std_diff and undo_success[keyCounter] == False:
-                        # disallow undo
-                        undo_success[keyCounter] = True
-                        
-                        current_text = stim_writing_output.text
-                        stim_writing_output.text = current_text[:-1]
-                    #############
         
         # not gazing any anything
         # Reset gaze checker and other variables
@@ -675,8 +693,6 @@ while continueRoutine:
             
             # reset everything else
             next_writing_frame[keyCounter] = 0
-            
-            undo_success[keyCounter] = False
         
         keyCounter += 1
         

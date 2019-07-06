@@ -26,6 +26,27 @@ from random import shuffle
 from psychopy.tools.monitorunittools import posToPix
 from iViewXAPI import  *
 from psychopy import visual, core
+import datetime
+
+
+
+
+#######################
+calibrate = 1
+
+debug=False
+
+# Time until an object is selected (in fps)
+gaze_required_time = 15 # 1/nth second
+
+# the pupil value required above the baseline sd to perform an undo operation
+required_pupil_std_diff = 0.6
+
+# the interval after performing a writing operation, during which an undo operation can be performed
+undo_interval = 60
+#######################
+
+
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__)).decode(sys.getfilesystemencoding())
@@ -71,22 +92,30 @@ print "iViewX API Version: " + str(systemData.API_MajorVersion) + "." + str(syst
 # ---------------------------------------------
 # Calibrate iViewX
 # ---------------------------------------------
-
-calibrate = 0
-debug=False
+badAccuracy=True
+logList = []
 
 if calibrate:
-    calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
+    while badAccuracy:
+        calibrationData = CCalibration(9, 1, 1, 0, 0, 250, 180, 2, 10, b"")
 
-    res = iViewXAPI.iV_SetupCalibration(byref(calibrationData))
-    print "iV_SetupCalibration " + str(res)
-    res = iViewXAPI.iV_Calibrate()
-    print "iV_Calibrate " + str(res)
-    res = iViewXAPI.iV_Validate()
-    print "iV_Validate " + str(res)
-    print "iV_GetAccuracy " + str(res)
-    print "deviationXLeft " + str(accuracyData.deviationLX) + " deviationYLeft " + str(accuracyData.deviationLY)
-    print "deviationXRight " + str(accuracyData.deviationRX) + " deviationYRight " + str(accuracyData.deviationRY)
+        res = iViewXAPI.iV_SetupCalibration(byref(calibrationData))
+        print "iV_SetupCalibration " + str(res)
+        res = iViewXAPI.iV_Calibrate()
+        print "iV_Calibrate " + str(res)
+        res = iViewXAPI.iV_Validate()
+        print "iV_Validate " + str(res)
+        res = iViewXAPI.iV_GetAccuracy(byref(accuracyData), 0)
+        print "iV_GetAccuracy " + str(res)
+        print "deviationXLeft " + str(accuracyData.deviationLX) + " deviationYLeft " + str(accuracyData.deviationLY)
+        print "deviationXRight " + str(accuracyData.deviationRX) + " deviationYRight " + str(accuracyData.deviationRY)
+        
+        timestamp = datetime.datetime.now()
+        logList.append([timestamp, str(accuracyData.deviationLX),str(accuracyData.deviationLY),str(accuracyData.deviationRX),str(accuracyData.deviationRY)])
+        
+        if accuracyData.deviationLX < 1.5 or accuracyData.deviationLY < 1.5 or accuracyData.deviationRX < 1.5 or accuracyData.deviationRY < 1.5:
+            badAccuracy = False
+
 
 # ---------------------------------------------
 # Setup the main window
@@ -116,14 +145,14 @@ else:
 stim_writing_output = visual.TextStim(win=win, name='stim_writing_output',
     text='',
     font='Arial',
-    units='pix', pos=[0, 50], height=30, wrapWidth=None, ori=0, 
+    units='pix', pos=[0, 200], height=30, wrapWidth=None, ori=0, 
     color='white', colorSpace='rgb', opacity=1,
     depth=-1.0);
     
 stim_writing_input = visual.TextStim(win=win, name='stim_writing_input',
     text='',
     font='Arial',
-    units='pix', pos=[0, -400], height=30, wrapWidth=None, ori=0, 
+    units='pix', pos=[0, -450], height=30, wrapWidth=None, ori=0, 
     color='#cccccc', colorSpace='rgb', opacity=1,
     depth=-1.0);
 
@@ -186,16 +215,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 # Size of outer feedback in px
 pupil_circle_goal_size = 50
 
-# Time until an object is selected (in fps)
-gaze_required_time = 15 # 1/nth second
-
 cursorTimer = 0
-
-# the interval after performing a writing operation, during which an undo operation can be performed
-undo_interval = 60
-
-# the pupil value required above the baseline sd to perform an undo operation
-required_pupil_std_diff = 0.99
 
 #Factor of scaling object size
 scaling = 20
@@ -242,7 +262,7 @@ undo_success = [False] * 27
 # quitTimer = 0
 
 #Size of selectable area around Object 3* = original
-objArea = 2.5 * scaling
+objArea = 3.5 * scaling
 
 # pupilSizeList=[]
 # pupilSizeRound=0
@@ -261,41 +281,41 @@ beInsideWrong=False
 # percent = rest2 + percent[stimuli:]
 
 # Create the object
-vert1 = ((-2*scaling, -2*scaling),  (-2*scaling, 2*scaling), (2*scaling, 2*scaling), (2*scaling, -2*scaling))
-vertSpace = ((-2*scaling, -2*scaling),  (-2*scaling, 2*scaling), (4*scaling, 2*scaling), (4*scaling, -2*scaling))
+vert1 = ((-3*scaling, -3*scaling),  (-3*scaling, 3*scaling), (3*scaling, 3*scaling), (3*scaling, -3*scaling))
+vertSpace = ((-3*scaling, -3*scaling),  (-3*scaling, 3*scaling), (5*scaling, 3*scaling), (5*scaling, -3*scaling))
 
 # Define keys
-Y1 = -100
-formQ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y1), name='Q')
-formW = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y1), name='W')
-formE = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y1), name='E')
-formR = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y1), name='R')
-formT = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y1), name='T')
-formY = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y1), name='Y')
-formU = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y1), name='U')
-formI = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y1), name='I')
-formO = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y1), name='O')
-formP = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y1), name='P')
-Y2 = -200
-formA = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-400, Y2), name='A')
-formS = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2), name='S')
-formD = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-200, Y2), name='D')
-formF = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-100, Y2), name='F')
+Y1 = 0
+formQ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-675, Y1), name='Q')
+formW = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-525, Y1), name='W')
+formE = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-375, Y1), name='E')
+formR = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-225, Y1), name='R')
+formT = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-75, Y1), name='T')
+formY = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(75, Y1), name='Y')
+formU = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(225, Y1), name='U')
+formI = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(375, Y1), name='I')
+formO = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(525, Y1), name='O')
+formP = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(675, Y1), name='P')
+Y2 = -150
+formA = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-600, Y2), name='A')
+formS = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-450, Y2), name='S')
+formD = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-300, Y2), name='D')
+formF = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y2), name='F')
 formG = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-0, Y2), name='G')
-formH = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(100, Y2), name='H')
-formJ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(200, Y2), name='J')
-formK = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2), name='K')
-formL = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(400,Y2), name='L')
+formH = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y2), name='H')
+formJ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(300, Y2), name='J')
+formK = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(450, Y2), name='K')
+formL = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(600,Y2), name='L')
 Y3 = -300
-formZ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-350, Y3), name='Z')
-formX = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-250, Y3), name='X')
-formC = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-150, Y3), name='C')
-formV = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-50, Y3), name='V')
-formB = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(50, Y3), name='B')
-formN = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(150, Y3), name='N')
-formM = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(250, Y3), name='M')
+formZ = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-525, Y3), name='Z')
+formX = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-375, Y3), name='X')
+formC = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-225, Y3), name='C')
+formV = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(-75, Y3), name='V')
+formB = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(75, Y3), name='B')
+formN = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(225, Y3), name='N')
+formM = visual.ShapeStim(win, fillColor=keyColor, vertices=vert1, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(375, Y3), name='M')
 
-formSpace = visual.ShapeStim(win, fillColor=keyColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(350, Y3), name=' ')
+formSpace = visual.ShapeStim(win, fillColor=keyColor, vertices=vertSpace, closeShape=True, lineWidth=buttonLineWidth, lineColor=buttonLineColor, pos=(525, Y3), name=' ')
 
 formList = [formQ, formW, formE, formR, formT, formY, formU, formI, formO, formP, formA, formS, formD, formF, formG, formH, formJ, formK, formL, formZ, formX, formC, formV, formB, formN, formM, formSpace]
 
@@ -520,17 +540,28 @@ while continueRoutine:
 
     #Delete output text if backspace is pressed
     if  len(event.getKeys(keyList=['backspace']) ) > 0:
+        timestamp = datetime.datetime.now()
+        logList.append([timestamp, "Backspace", bsize, baseline_mean,baseline_sd])
         stim_writing_output.text = ''
         stim_writing_output.color = 'white'
 
     #Iterate through sentenceList if space is pressed
     if  len(event.getKeys(keyList=['space']) ) > 0:
+        timestamp = datetime.datetime.now()
+        logList.append([timestamp, sentenceList[sentenceCounter], bsize, baseline_mean,baseline_sd])
         sentenceCounter += 1
         stim_writing_output.text = ''
         stim_writing_output.color = 'white'
     
     #Safely quit if end of sentenceList is reached
     if sentenceCounter >= len(sentenceList):
+        f = open(filename+'.test', "a")
+        f.write("timestamp;event;pupilsize;mean_size;sd\n")
+        for _list in logList:
+            for _string in _list:
+                f.write(str(_string) + '; ')
+            f.write('\n')
+        f.close()
         core.quit()
      
     ### Draw text to input   
@@ -554,9 +585,11 @@ while continueRoutine:
         # UNDO
         ############
         # Check eye pupil
+        res = iViewXAPI.iV_GetSample(byref(sampleData))
+        bsize = (sampleData.leftEye.diam) # /32 fur highspeed eyetracker, ohne /32 fur RED
         # check how many sd the current pupil value is
         pupil_std_diff = (current_pupil_mean - baseline_mean) / baseline_sd
-        print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
+        #print(str(current_pupil_mean) + " - " + str(baseline_mean) + " - " + str(baseline_sd) + " - " + str(pupil_std_diff))
                    
          # Undo if pupil_std_diff > required number above std
         current_pupil_change_size = (pupil_std_diff * pupil_circle_goal_size) / required_pupil_std_diff
@@ -575,6 +608,8 @@ while continueRoutine:
            
         # Actually do the undo
         if pupil_std_diff >= required_pupil_std_diff and letterTyped:
+            timestamp = datetime.datetime.now()
+            logList.append([timestamp, "Dialation", bsize, baseline_mean,baseline_sd])
             # disallow undo
             undoCounter = 99
             letterTyped = False
@@ -601,7 +636,11 @@ while continueRoutine:
         
             objBoundary_Y_1 = posPix[1] - objArea
             objBoundary_Y_2 = posPix[1] + objArea
-
+            
+            if debug:
+                keyBorder = visual.Rect(win, pos=( posPix[0],  posPix[1]), width=objArea*2, height=objArea*2)
+                keyBorder.draw()
+                
         # Are we gazing at the object?
         if gazeRx > objBoundary_X_1 and gazeRx < objBoundary_X_2 and gazeRy > objBoundary_Y_1 and gazeRy < objBoundary_Y_2:
             
@@ -650,6 +689,7 @@ while continueRoutine:
             # Select object
             if gazeTimer[keyCounter] >= gaze_required_time:
                 undoCounter = 0
+                
                 # record the frame that we first wrote on
                 # frameNDeep = copy.deepcopy(frameN)
                 
@@ -674,8 +714,14 @@ while continueRoutine:
                     # Write
                     stim_writing_output.text = stim_writing_output.text.replace('|', '')
                     stim_writing_output.text = stim_writing_output.text + key.name
+                    
+                    timestamp = datetime.datetime.now()
+                    logList.append([timestamp, key.name, bsize, baseline_mean,baseline_sd])
+                    
                     if not stim_writing_input.text.startswith(stim_writing_output.text):
                         stim_writing_output.color='red'
+                        timestamp = datetime.datetime.now()
+                        logList.append([timestamp, "Mistake", bsize, baseline_mean,baseline_sd])
                     else:
                         stim_writing_output.color='white'
                     letterTyped = True
